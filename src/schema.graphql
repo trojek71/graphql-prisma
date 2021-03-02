@@ -28,6 +28,7 @@
     input CreateUserInput {
             name: String!
             email: String!
+            password: String!
             
         }
 
@@ -64,6 +65,7 @@
         id: ID!
         name: String!
         email: String!
+        password: String!
         posts: [Post!]!
         comments: [Comment!]!
     }
