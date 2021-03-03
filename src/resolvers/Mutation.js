@@ -33,6 +33,29 @@ const Mutation = {
             
     }, 
 
+    async login(parent, args, { prisma }, info){
+
+        const user = await prisma.query.user({
+            where:{
+                email: args.data.email
+            }
+        })
+
+        if (!user){
+            throw new Error('Nie można się zalogować')
+        }
+            const isMatch = await bcrypt.compare(args.data.password, user.password)
+
+            if (!isMatch){
+                throw new Error(' Nie można się zalogować')
+            }
+            return {
+                user,
+                token: jwt.sign({ userId: user.id }, 'thisisasecret')
+            }
+
+    },
+
     //     const emailTaken = db.users.some((user) => user.email === args.data.email)
     //    if (emailTaken) {
     //        throw new Error('Email taken')
@@ -45,18 +68,18 @@ const Mutation = {
         
     //     return user
     
-    async deleteUser(parent, args, { prisma }, info){
+    // async deleteUser(parent, args, { prisma }, info){
             
-            const userExists = await prisma.exists.User({id: args.id})
+    //         const userExists = await prisma.exists.User({id: args.id})
                 
-                if (!userExists) {
-                    throw new Error('User not found')
-                }
-                return prisma.mutation.deleteUser({
-                    where: {
-                        id: args.id
-                    }
-                }, info)
+    //             if (!userExists) {
+    //                 throw new Error('User not found')
+    //             }
+    //             return prisma.mutation.deleteUser({
+    //                 where: {
+    //                     id: args.id
+    //                 }
+    //             }, info)
 
         // const userIndex = db.users.findIndex((user) => user.id === args.id)
         //     if(userIndex === -1){
@@ -79,7 +102,7 @@ const Mutation = {
 
         //         return deletedUsers[0]
 
-    },
+//    },
    async updateUser(parent, args, { prisma }, info) {
          return prisma.mutation.updateUser({
             where:{
