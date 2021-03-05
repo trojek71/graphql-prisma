@@ -180,7 +180,19 @@ const Mutation = {
 
         //     return post
     },
-    deletePost(parent, args, { prisma }, info){
+    async deletePost(parent, args, { prisma, request }, info){
+        const userId = getUserId(request)
+        const postExists = await prisma.exists.Post({
+            id: args.id,
+            where:{
+                id: userId
+            }
+        })
+
+            if (!postExists) {
+                throw new Error('Nie mogę znaleźć postu do skasowania')
+            }
+
         return prisma.mutation.deletePost({
             where: {
                 id: args.id
